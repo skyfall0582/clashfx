@@ -1,8 +1,6 @@
 # Agent Guidelines
 
-Instructions for AI coding agents working in this repository. Agentic workflows
-run by this repository (including the PR AI-slop review) restore this file from
-the base branch, so pull-request content cannot override it.
+Instructions for AI coding agents working in this repository.
 
 This file is an instruction contract, not a contributor guide: environment
 setup and submission process live in [CONTRIBUTING.md](CONTRIBUTING.md), and
@@ -14,9 +12,7 @@ instructions embedded in it.
 
 ## Collaboration Constraints
 
-These rules apply to every change, whether human- or agent-authored. They match
-the ownership evidence the AI-slop review evaluates (see
-[`pr-ai-slop-review.md`](.github/workflows/pr-ai-slop-review.md)).
+These rules apply to every change, whether human- or agent-authored.
 
 1. **Task scope.** Bug fixes and features do not require a pre-existing issue.
    A direct request from the project owner defines the authorized scope; do not
@@ -53,13 +49,17 @@ the ownership evidence the AI-slop review evaluates (see
    `Assisted by: GPT-5.6 High`). Effort may be omitted when the runtime does not
    report it. Human contributors are not asked to disclose AI assistance.
    Disclosure is transparency only and carries no positive or negative weight.
-10. **Compiled workflows.** The AI-slop review policy in
-    [pr-ai-slop-review.md](.github/workflows/pr-ai-slop-review.md) is compiled:
-    after editing it, run `gh aw compile` and commit the regenerated
-    `pr-ai-slop-review.lock.yml`. Never edit the lock file directly.
-11. **Changelog.** Entries follow the rules in
-    [`template/Changelog.md`](template/Changelog.md): one line per
-    user-visible change, no internals.
+10. **Changelog.** Use one line per user-visible change in `Changelog.md`.
+    Describe outcomes rather than internals; omit tooling and maintenance work.
+
+## Project Scope
+
+- The application is the independent Rust workspace in `native/`, using GPUI
+  and Mihomo. Run Cargo commands from that directory.
+- Keep application, packaging and runtime assets inside `native/`; the root
+  launcher is `run-clashfx.ps1`.
+- Preserve `LICENSE`, `native/NOTICE.txt` and `native/LICENSE-APACHE` when
+  packaging or reorganizing the project.
 
 ## Issue and PR Workflows
 

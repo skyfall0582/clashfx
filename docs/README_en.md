@@ -24,6 +24,8 @@ cd clashfx
 
 The script downloads Mihomo and geodata and writes the complete application to `native/releases/ClashFx`.
 
+The Rust workspace is in `native/`. See [CONTRIBUTING.md](../CONTRIBUTING.md) for development setup and checks.
+
 ## Use
 
 Run `ClashFx.exe` from the build output. Keep `mihomo.exe` and the `geodata` directory alongside it.

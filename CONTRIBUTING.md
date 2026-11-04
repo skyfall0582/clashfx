@@ -1,164 +1,36 @@
-# CONTRIBUTING
+# Contributing to ClashFx
 
-Thank you for your interest in contributing to **Clash Verge Rev**! This guide provides instructions to help you set up your development environment and start contributing effectively.
+ClashFx is a Windows x64 proxy client built with Rust, GPUI and Mihomo. Its independent Cargo workspace is in `native/`.
 
-## Internationalization (i18n)
+## Development
 
-We welcome translations and improvements to existing locales. For details on contributing translations, please see [CONTRIBUTING_i18n.md](docs/CONTRIBUTING_i18n.md).
+Install Rust 1.95.0 with the MSVC toolchain, Visual Studio C++ Build Tools and a Windows SDK. `native/rust-toolchain.toml` selects the Rust toolchain and required components.
 
-## Contribution Expectations
+From the repository root, build the complete application with:
 
-We welcome AI-assisted contributions — AI assistance itself is not a problem. What we require is **ownership**: every pull request must show that the stated problem is understood and that the change deliberately solves it. Incoming pull requests from contributors without write access are screened by an automated review ([`pr-ai-slop-review`](.github/workflows/pr-ai-slop-review.md)) that evaluates this ownership evidence and may label high-risk submissions `ai-slop:med` or `ai-slop:high`. The policy is maintained in that file and compiled into `pr-ai-slop-review.lock.yml` (`gh aw compile`); never edit the lock file by hand. If you want to adjust the review policy, the easiest path is directing an AI coding agent to make the change — the workflow is documented in [AGENTS.md](AGENTS.md).
-
-To make sure your contribution is assessed fairly:
-
-- **Describe the problem and scope.** Bug fixes and features may proceed from a direct project-owner request without a pre-existing issue. Issue links are optional; include an existing issue when it provides relevant context.
-- **Keep the diff mapped to the issue.** Every changed area should be explainable from the linked issue. Unrelated refactors, formatting churn, or dependency bumps belong in separate pull requests with their own motivation.
-- **Describe the problem in your own words.** A short statement of what breaks or what is needed, and why this approach fixes it, is worth more than a long generated report.
-- **Validate against the reported behavior.** Show how the reported problem was reproduced and confirmed fixed. Generic checklists and raw tool output are not verification.
-- **Do not pad with tests or defensive code.** New tests are not expected by default. Add them only when the linked issue calls for them, keep them minimal, and explain in the pull request why each is necessary; speculative error handling and coverage of hypothetical failure modes inflate the diff without adding value.
-- **Disclose AI automation.** If an AI agent produced or co-produced the change, end the pull request body with the model and effort level (for example, `Assisted by: GPT-5.6 High`; effort is optional when your tool does not report it). The PR template intentionally omits this footer; agents add it themselves. Disclosure is transparency only — it does not affect how the change is assessed.
-
-If your pull request receives an `ai-slop` label, the fastest way to clear it is substantive: link (or ask us to create) the underlying issue, narrow the scope, or push implementation changes that respond to review feedback. Editing the pull request description alone does not change the assessment.
-
-## Development Setup
-
-Before contributing, you need to set up your development environment. Follow the steps below carefully.
-
-### Prerequisites
-
-1. **Install Rust and Node.js**  
-   Follow the [Tauri prerequisites](https://tauri.app/start/prerequisites/) for your operating system. Use the Node.js version in [`.tool-versions`](.tool-versions); [`rust-toolchain.toml`](rust-toolchain.toml) selects the Rust version and required components when you run Cargo from this repository.
-
-### Windows Users
-
-> [!NOTE]  
-> **Windows ARM users must also install [LLVM](https://github.com/llvm/llvm-project/releases) (including clang) and set the corresponding environment variables.**  
-> The `ring` crate depends on `clang` when building on Windows ARM.
-
-Additional steps for Windows:
-
-- Ensure Rust and Node.js are added to your system `PATH`.
-
-- Install the GNU `patch` tool.
-
-- Use the MSVC toolchain for Rust:
-
-```bash
-rustup target add x86_64-pc-windows-msvc
-rustup set default-host x86_64-pc-windows-msvc
+```powershell
+.\native\scripts\build.ps1
 ```
 
-### Install Node.js Package Manager
+The script downloads Mihomo and geodata when missing and writes the application to `native/releases/ClashFx`. Run `ClashFx.exe` from that directory, or use `run-clashfx.ps1` from the repository root.
 
-[Corepack is no longer bundled with Node.js starting with Node.js 25](https://nodejs.org/api/corepack.html). Install it globally if it is not already available, then enable it:
+## Validation
 
-```bash
-npm install --global corepack
-corepack enable
+Run Cargo commands from `native`:
+
+```powershell
+cd native
+cargo fmt --all -- --check
+cargo test --locked -p clashfx-core
+cargo clippy --locked --workspace --all-targets -- -D warnings
 ```
 
-Run pnpm from this repository so Corepack selects the version pinned by `packageManager` in [`package.json`](package.json).
+The GitHub workflow runs these checks and builds the application on Windows. Integration tests requiring Mihomo are ignored by default; see [native/README.md](native/README.md) for the commands and their scope. After changing the application or packaged files, run `scripts/build.ps1` from `native` to refresh the complete application output.
 
-### Install Project Dependencies
+## Contributions
 
-Node.js dependencies:
+Describe the problem, scope and approach in your own words. A direct project-owner request is sufficient scope; link an existing issue when relevant. Keep changes focused and validate the affected behavior. Add tests only when they reproduce a regression or guard behavior that would otherwise go unnoticed.
 
-```bash
-pnpm install --frozen-lockfile
-```
+Use English for code, comments, commit messages and pull requests. Commit subjects follow Conventional Commits, and commits must be signed. Follow the [pull request template](.github/PULL_REQUEST_TEMPLATE.md). Agents must follow [AGENTS.md](AGENTS.md), including its AI assistance disclosure requirement for pull requests and issues.
 
-Ubuntu-only system packages:
-
-```bash
-sudo apt-get install -y libxslt1.1 libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf
-```
-
-### Download the Mihomo Core Binary (Automatic)
-
-```bash
-pnpm run prebuild
-pnpm run prebuild --force  # Re-download and overwrite Mihomo core and service binaries
-```
-
-### Prepare the Development Service Source
-
-`pnpm dev` builds the development service from a sibling checkout of [`clash-verge-service-ipc`](https://github.com/clash-verge-rev/clash-verge-service-ipc). The binaries downloaded by `pnpm prebuild` do not replace this source checkout.
-
-Check the `clash_verge_service_ipc` dependency in [`src-tauri/Cargo.toml`](src-tauri/Cargo.toml), then clone the service repository alongside `clash-verge-rev` and check out the matching tag. If the sibling directory already exists, reuse it and check its version rather than overwriting it. Without this checkout, `pnpm dev` fails when it tries to access `../clash-verge-service-ipc/Cargo.toml`.
-
-### Run the Development Server
-
-Run these commands from the root of `clash-verge-rev`:
-
-```bash
-pnpm dev           # Build the development service and start the desktop app
-pnpm dev:diff      # Alias of pnpm dev
-pnpm dev:tauri     # Run Tauri directly with the tauri-dev feature
-```
-
-For frontend-only development, use `pnpm web:dev`. It does not start the Rust backend or build the development service.
-
-### Build the Project
-
-Standard build:
-
-```bash
-pnpm build
-```
-
-Fast build for testing:
-
-```bash
-pnpm build:fast
-```
-
-### Clean Build
-
-```bash
-pnpm clean
-```
-
-### Portable Version (Windows Only)
-
-```bash
-pnpm portable
-```
-
-## Contributing Your Changes
-
-### Before Committing
-
-**Code quality checks:**
-
-```bash
-# Rust backend
-cargo clippy-all
-# Frontend
-pnpm lint
-```
-
-**Code formatting:**
-
-```bash
-# Rust backend
-cargo fmt
-# Frontend
-pnpm format
-```
-
-### Signing your commit
-
-Signed commits are required to verify authorship and ensure your contributions can be merged. Reference signing-commits [here](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits).
-
-### Submitting Your Changes
-
-1. Fork the repository.
-
-2. Create a new branch for your feature or bug fix.
-
-3. Commit your changes with clear messages and make sure it's signed.
-
-4. Push your branch and submit a pull request.
-
-We appreciate your contributions and look forward to your participation!
+Preserve the GPL license and the source and component attribution in `native/NOTICE.txt` and `native/LICENSE-APACHE`.

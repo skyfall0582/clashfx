@@ -99,6 +99,6 @@ The ignored integration tests require the fetched Mihomo executable. They start 
 - `crates/clashfx-core`: persistent settings, subscription parsing, runtime configuration, Mihomo lifecycle/controller, log classification, health checks, failover and Windows system proxy ownership.
 - `crates/clashfx-ui`: GPUI views, native text editing/IME, forms and command bindings.
 - `scripts`: official core acquisition and Windows build packaging.
-- `assets`: original vector logo and navigation icons, embedded in the GPUI interface and Windows executable. The connection diagram is drawn by `ui/network.rs`. To regenerate PNG/ICO exports after editing the vectors, run `node scripts/render-icons.cjs` with `sharp` installed (or set `CLASHFX_SHARP_MODULE` to its module path). Normal Rust builds use the checked-in exports and require no Node.js.
+- `assets`: original vector logo and navigation icons, embedded in the GPUI interface and Windows executable. The connection diagram is drawn by `ui/network.rs`. To regenerate application PNG/ICO exports after editing the logo, run `node scripts/render-icons.cjs` with `sharp` installed (or set `CLASHFX_SHARP_MODULE` to its module path). Normal Rust builds use the checked-in exports and require no Node.js.
 
 ClashFx uses GPL-3.0-only. See the repository `LICENSE` and `NOTICE.txt` for source attribution and third-party component notices; the adapted GPUI text editing code includes its Apache-2.0 license.

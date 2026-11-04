@@ -41,9 +41,7 @@ async function main() {
         .toFile(path.join(assets, 'clashfx.png'));
     await sharp(source, { density: 384 }).resize(128, 128).png()
         .toFile(path.join(assets, 'clashfx-sidebar.png'));
-    await sharp(path.join(assets, 'connection-orbit.svg'), { density: 192 }).png()
-        .toFile(path.join(assets, 'connection-orbit.png'));
-    console.log('Exported application icons and connection artwork.');
+    console.log('Exported application icons.');
 }
 
 main().catch(error => { console.error(error); process.exitCode = 1; });

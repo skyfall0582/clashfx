@@ -24,6 +24,8 @@ cd clashfx
 
 构建脚本会下载 Mihomo 和地理数据库，并将完整程序输出到 `native/releases/ClashFx`。
 
+Rust 工作区位于 `native/`，开发环境和检查命令见[贡献指南](CONTRIBUTING.md)。
+
 ## 使用
 
 运行构建目录中的 `ClashFx.exe`，保留同目录的 `mihomo.exe` 和 `geodata` 文件夹。

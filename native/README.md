@@ -1,6 +1,6 @@
 # ClashFx
 
-A Windows desktop proxy client with a GPUI native interface and a Rust failover engine, developed in a fork of Clash Verge Rev. The native entry point uses Mihomo directly through its local controller and WebSocket log API. Node.js, React, Tauri and WebView are not required to run or build this entry point.
+A Windows desktop proxy client with a GPUI native interface and a Rust failover engine. ClashFx uses Mihomo directly through its local controller and WebSocket log API. Node.js, React, Tauri and WebView are not required to run or build this application.
 
 ## Run
 
@@ -67,11 +67,11 @@ Settings applies Rule, Global or Direct modes immediately, with validation and r
 
 Logs merge application events with Mihomo stdout/stderr, including startup diagnostics before the WebSocket connects. Warning/error filters, keyword search and copying the filtered results are available in a fixed toolbar. Only the records area scrolls, using the wheel or its visible draggable scrollbar. Update failures appear briefly as dismissible notifications and remain in the logs. Up to 2,000 core messages and 500 application events are retained in memory; the current core log also remains in the data directory. WebSocket events independently drive failure detection, so displaying unrelated DNS or DIRECT warnings does not trigger proxy failover.
 
-Provider-only subscriptions and URI/base64 subscriptions must first be exported as Clash YAML containing nodes. The native entry point implements the requested subscription/node and Windows system-proxy workflows; the legacy Verge TUN/service manager, WebDAV, extension scripting and other unrelated settings screens have not been ported. The original upstream application remains in the repository for reference and further migration.
+Provider-only subscriptions and URI/base64 subscriptions must first be exported as Clash YAML containing nodes. ClashFx supports subscription and node management and Windows system-proxy workflows. TUN/service mode, WebDAV and extension scripting are not implemented.
 
 ## Build
 
-Prerequisites: Rust 1.95.0 with the MSVC target, Visual Studio C++ Build Tools and a Windows SDK. The native workspace pins its own toolchain independently of the upstream Tauri workspace.
+Prerequisites: Rust 1.95.0 with the MSVC target, Visual Studio C++ Build Tools and a Windows SDK. The native workspace pins its own toolchain.
 
 ```powershell
 .\scripts\fetch-core.ps1
@@ -101,4 +101,4 @@ The ignored integration tests require the fetched Mihomo executable. They start 
 - `scripts`: official core acquisition and Windows build packaging.
 - `assets`: original vector logo and navigation icons, embedded in the GPUI interface and Windows executable. The connection diagram is drawn by `ui/network.rs`. To regenerate PNG/ICO exports after editing the vectors, run `node scripts/render-icons.cjs` with `sharp` installed (or set `CLASHFX_SHARP_MODULE` to its module path). Normal Rust builds use the checked-in exports and require no Node.js.
 
-ClashFx and the upstream fork use GPL-3.0-only. See the repository `LICENSE` and `NOTICE.txt`; the adapted GPUI text editing code includes its Apache-2.0 license.
+ClashFx uses GPL-3.0-only. See the repository `LICENSE` and `NOTICE.txt` for source attribution and third-party component notices; the adapted GPUI text editing code includes its Apache-2.0 license.

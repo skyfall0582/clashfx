@@ -71,7 +71,7 @@ ClashFx 0.2.10 · GPUI 原生版
 当前范围
 已实现 GPUI 界面、订阅管理、切换池、自动故障转移、恢复、手动控制、日志和 Windows 系统代理。
 支持包含 proxies 列表的 YAML。仅含 proxy-providers、URI 或 Base64 的订阅需先导出为包含节点的 Clash YAML。
-Verge 原有 TUN / 服务模式、WebDAV 和扩展脚本等其他功能尚未迁移。
+当前不支持 TUN / 服务模式、WebDAV 和扩展脚本。
 
 旧版本升级
 原来的节点选择与地区筛选会合并为切换池，保留原先允许自动使用的范围。

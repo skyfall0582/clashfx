@@ -1,0 +1,32 @@
+[workspace]
+members = ["crates/clashfx-core", "crates/clashfx-ui"]
+default-members = ["crates/clashfx-ui"]
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.95"
+version = "0.2.10"
+license = "GPL-3.0-only"
+
+[workspace.dependencies]
+anyhow = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml_ng = "0.10"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync", "process", "io-util", "net"] }
+reqwest = { version = "0.13", default-features = false, features = ["json", "rustls", "gzip", "stream", "query"] }
+futures-util = "0.3"
+regex = "1"
+uuid = { version = "1", features = ["v4", "serde"] }
+
+[profile.dev]
+debug = 0
+incremental = true
+
+[profile.release]
+opt-level = 2
+lto = "thin"
+strip = "debuginfo"
+

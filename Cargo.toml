@@ -1,4 +1,5 @@
 [workspace]
+exclude = ["native"]
 members = [
   "src-tauri",
   "crates/clash-verge-draft",

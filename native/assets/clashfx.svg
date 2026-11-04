@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="8 8 240 240" fill="none">
+  <title>ClashFx — f and star monogram</title>
+  <defs>
+    <linearGradient id="tile" x1="34" y1="16" x2="221" y2="245" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7932C"/>
+      <stop offset="1" stop-color="#ED8922"/>
+    </linearGradient>
+    <linearGradient id="star" x1="170" y1="107" x2="188" y2="198" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#FFE1B5"/>
+    </linearGradient>
+    <clipPath id="tile-clip">
+      <rect x="8" y="8" width="240" height="240" rx="84"/>
+    </clipPath>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="84" fill="url(#tile)"/>
+  <rect x="8.75" y="8.75" width="238.5" height="238.5" rx="83.25" stroke="white" stroke-opacity=".2" stroke-width="1.5"/>
+  <g clip-path="url(#tile-clip)">
+    <g transform="translate(-10 0)">
+      <path d="M141 56H124C99 56 83 70 77 96L74 110H58L52 134H68L33.65 276H63.65L98 134H120L126 110H104L108 96C111 84 117 80 128 80H135L141 56Z" fill="white"/>
+      <path d="M210 89C190 126 192 135 226 158C188 153 179 161 158 199C163 161 157 152 126 132C163 137 176 125 210 89Z" transform="translate(126 89) scale(1.12) translate(-126 -89)" fill="url(#star)"/>
+    </g>
+  </g>
+</svg>

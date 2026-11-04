@@ -1,0 +1,27 @@
+[package]
+name = "clashfx-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+chrono.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml_ng.workspace = true
+tokio.workspace = true
+reqwest.workspace = true
+futures-util.workspace = true
+regex.workspace = true
+uuid.workspace = true
+directories = "6"
+dunce = "1"
+tokio-tungstenite = "0.28"
+fs2 = "0.4"
+
+[target.'cfg(windows)'.dependencies]
+winreg = "0.56"
+windows-sys = { version = "0.61", features = ["Win32_Networking_WinInet", "Win32_Foundation", "Win32_Security", "Win32_System_JobObjects", "Win32_System_Threading"] }
+

@@ -1,0 +1,29 @@
+ClashFx 0.2.10
+
+ClashFx is a GPUI native client developed in a fork of Clash Verge Rev.
+Upstream source: https://github.com/clash-verge-rev/clash-verge-rev
+Upstream revision: ef784e459d31fe9d1946568b6fe47ac3a7e692b7
+ClashFx and Clash Verge Rev are licensed under GPL-3.0-only; see LICENSE.
+
+The native entry point reuses the Mihomo configuration and controller protocol.
+It is a separate Rust application; it does not embed the legacy Tauri/React UI.
+
+GPUI: https://github.com/zed-industries/zed (Apache-2.0)
+Text editing implementation in input.rs is adapted from the GPUI 0.2.2
+examples/input.rs file, copyright Zed Industries and contributors.
+Apache-2.0 license: https://www.apache.org/licenses/LICENSE-2.0
+
+Mihomo: https://github.com/MetaCubeX/mihomo (GPL-3.0)
+The bundled binary is fetched unmodified from an official tagged release.
+core-version.json records its release URL and archive SHA256.
+Windows installers add an Authenticode signature without changing its executable code.
+
+Windows installers include Microsoft's vcruntime140.dll from the Visual Studio
+x64 CRT redistributable directory, retaining its original Microsoft signature.
+This component is subject to the applicable Microsoft software license terms.
+
+GeoIP / GeoSite / ASN: https://github.com/MetaCubeX/meta-rules-dat (GPL-3.0)
+The geodata directory contains unmodified official release assets.
+geodata/manifest.json records their source URLs, release date and SHA256.
+This product includes GeoLite2 data created by MaxMind, available from
+https://www.maxmind.com/.

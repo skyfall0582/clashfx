@@ -1,0 +1,7 @@
+/bin/*.exe
+/bin/core-version.json
+/bin/geodata/
+/work/
+/releases/
+/target/
+

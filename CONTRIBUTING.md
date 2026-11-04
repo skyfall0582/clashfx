@@ -12,7 +12,7 @@ We welcome AI-assisted contributions — AI assistance itself is not a problem. 
 
 To make sure your contribution is assessed fairly:
 
-- **Link a pre-existing issue.** Non-trivial changes should fix or implement something already reported in an issue. An issue created after the pull request is a much weaker signal than a genuine problem report.
+- **Describe the problem and scope.** Bug fixes and features may proceed from a direct project-owner request without a pre-existing issue. Issue links are optional; include an existing issue when it provides relevant context.
 - **Keep the diff mapped to the issue.** Every changed area should be explainable from the linked issue. Unrelated refactors, formatting churn, or dependency bumps belong in separate pull requests with their own motivation.
 - **Describe the problem in your own words.** A short statement of what breaks or what is needed, and why this approach fixes it, is worth more than a long generated report.
 - **Validate against the reported behavior.** Show how the reported problem was reproduced and confirmed fixed. Generic checklists and raw tool output are not verification.

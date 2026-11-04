@@ -18,11 +18,11 @@ These rules apply to every change, whether human- or agent-authored. They match
 the ownership evidence the AI-slop review evaluates (see
 [`pr-ai-slop-review.md`](.github/workflows/pr-ai-slop-review.md)).
 
-1. **Issue first.** Product bug fixes and features require a pre-existing issue;
-   self-scoped maintenance work does not. Follow the PR template for linkage and
-   revert references. If a required issue is missing, ask maintainers to open or
-   approve one before implementing. For security-sensitive fixes that cannot be
-   tracked publicly, follow maintainer-approved private tracking.
+1. **Task scope.** Bug fixes and features do not require a pre-existing issue.
+   A direct request from the project owner defines the authorized scope; do not
+   ask for an issue or additional approval before implementing that request.
+   Link an existing issue when relevant, and follow the PR template for revert
+   references. Do not create GitHub issues without explicit authorization.
 2. **Scope discipline.** Every changed file must be justifiable from the linked
    issue or the stated PR scope. No drive-by refactors, renames, formatting
    churn, or dependency bumps unrelated to the work.

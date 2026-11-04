@@ -1,3 +1,30 @@
+# ClashFx — GPUI native client
+
+This fork adds a GPUI desktop entry point with log-triggered node and subscription
+failover. See [native/README.md](native/README.md) for running, building and the
+implemented scope. Start it with `run-clashfx.ps1`; the upstream application below
+is preserved as a migration reference.
+
+## Build ClashFx on Windows
+
+Install Rust 1.95.0, Visual Studio C++ Build Tools and a Windows SDK, then run:
+
+```powershell
+git clone https://github.com/skyfall0582/clashfx.git
+cd clashfx
+.\run-clashfx.ps1 -Build
+```
+
+The build downloads Mihomo and geodata and writes the application to
+`native/releases/ClashFx`. Local subscriptions, settings and generated files are
+not included in the source repository.
+
+ClashFx is based on [Clash Verge Rev](https://github.com/clash-verge-rev/clash-verge-rev)
+and is distributed under [GPL-3.0-only](LICENSE). See
+[third-party notices](native/NOTICE.txt) for component attribution and licenses.
+
+---
+
 <h1 align="center">
   <img src="./src-tauri/icons/icon.png" alt="Clash" width="128" />
   <br>

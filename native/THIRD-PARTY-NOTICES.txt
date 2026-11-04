@@ -1960,8 +1960,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 GNU General Public License v3.0 only (GPL-3.0-only)
 
 Used by:
-- clashfx-core 0.2.10
-- clashfx 0.2.10
+- clashfx-core 0.2.11
+- clashfx 0.2.11
 
 GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007

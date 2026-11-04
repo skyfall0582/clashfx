@@ -1,6 +1,86 @@
 use super::*;
 use subscriptions::source_preview;
 
+fn traffic_size(bytes: u64) -> String {
+    let mut value = bytes as f64;
+    let units = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
+    let mut unit = 0;
+    while value >= 1024. && unit < units.len() - 1 {
+        value /= 1024.;
+        unit += 1;
+    }
+    if unit == 0 {
+        format!("{bytes} B")
+    } else {
+        format!("{value:.2} {}", units[unit])
+    }
+}
+
+fn subscription_usage(sub: &clashfx_core::model::Subscription) -> AnyElement {
+    let row = div()
+        .id(SharedString::from(format!("profile-usage-{}", sub.id)))
+        .flex()
+        .flex_col()
+        .gap_1()
+        .text_size(px(12.));
+    let Some(usage) = &sub.usage else {
+        return row
+            .text_color(rgb(MUTED))
+            .child("暂无流量信息")
+            .tooltip(|_, cx| {
+                cx.new(|_| controls::Tip("更新订阅后获取，需服务商提供流量信息".into()))
+                    .into()
+            })
+            .into_any_element();
+    };
+    let remaining = usage.remaining();
+    let fraction = remaining.zip(usage.total).and_then(|(remaining, total)| {
+        (total > 0).then(|| (remaining as f64 / total as f64) as f32)
+    });
+    let color = if remaining == Some(0) || fraction.is_some_and(|value| value <= 0.1) {
+        0xb64c4a
+    } else {
+        ACCENT
+    };
+    let tip = usage.used().map_or_else(
+        || "用量未提供 · 随订阅更新刷新".to_owned(),
+        |used| format!("已用 {} · 随订阅更新刷新", traffic_size(used)),
+    );
+    row.child(
+        div()
+            .flex()
+            .items_center()
+            .justify_between()
+            .gap_2()
+            .child(
+                div()
+                    .text_color(rgb(color))
+                    .font_weight(FontWeight::MEDIUM)
+                    .child(format!(
+                        "剩余 {}",
+                        remaining.map(traffic_size).unwrap_or_else(|| "—".into())
+                    )),
+            )
+            .child(div().text_color(rgb(MUTED)).child(format!(
+                "总量 {}",
+                usage.total.map(traffic_size).unwrap_or_else(|| "—".into())
+            ))),
+    )
+    .when_some(fraction, |row, fraction| {
+        row.child(
+            div()
+                .h(px(4.))
+                .w_full()
+                .rounded_full()
+                .overflow_hidden()
+                .bg(rgb(LINE))
+                .child(div().h_full().w(relative(fraction)).bg(rgb(color))),
+        )
+    })
+    .tooltip(move |_, cx| cx.new(|_| controls::Tip(tip.clone())).into())
+    .into_any_element()
+}
+
 impl ClashFx {
     pub(super) fn subscription_management(&mut self, cx: &mut Context<Self>) -> AnyElement {
         let query = self.text("subscription_search", cx).to_lowercase();
@@ -118,6 +198,9 @@ impl ClashFx {
                             ))
                         }),
                 )
+                .when(sub.url.is_some(), |card| {
+                    card.child(subscription_usage(&sub))
+                })
                 .child(
                     div()
                         .flex()

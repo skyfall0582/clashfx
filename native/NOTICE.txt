@@ -1,12 +1,12 @@
-ClashFx 0.2.10
+ClashFx 0.2.11
 
 ClashFx is a GPUI native client developed in a fork of Clash Verge Rev.
 Upstream source: https://github.com/clash-verge-rev/clash-verge-rev
 Upstream revision: ef784e459d31fe9d1946568b6fe47ac3a7e692b7
 ClashFx and Clash Verge Rev are licensed under GPL-3.0-only; see LICENSE.
 ClashFx source and build scripts for this release:
-https://github.com/skyfall0582/clashfx/tree/v0.2.10
-https://github.com/skyfall0582/clashfx/releases/tag/v0.2.10
+https://github.com/skyfall0582/clashfx/tree/v0.2.11
+https://github.com/skyfall0582/clashfx/releases/tag/v0.2.11
 
 The native entry point reuses the Mihomo configuration and controller protocol.
 It is a separate Rust application; it does not embed the legacy Tauri/React UI.

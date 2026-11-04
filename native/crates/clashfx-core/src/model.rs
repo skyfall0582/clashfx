@@ -154,7 +154,26 @@ pub struct Subscription {
     pub source_path: Option<String>,
     #[serde(default)]
     pub pool_nodes: Vec<String>,
+    #[serde(default)]
+    pub usage: Option<SubscriptionUsage>,
     pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SubscriptionUsage {
+    pub upload: Option<u64>,
+    pub download: Option<u64>,
+    pub total: Option<u64>,
+}
+
+impl SubscriptionUsage {
+    pub fn used(&self) -> Option<u64> {
+        Some(self.upload?.saturating_add(self.download?))
+    }
+
+    pub fn remaining(&self) -> Option<u64> {
+        Some(self.total?.saturating_sub(self.used()?))
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

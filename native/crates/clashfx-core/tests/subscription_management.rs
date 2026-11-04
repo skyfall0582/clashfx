@@ -70,7 +70,9 @@ async fn editing_source_is_transactional_and_survives_restart() -> Result<()> {
     let listener = TcpListener::bind("127.0.0.1:0").await?;
     let base = format!("http://127.0.0.1:{}", listener.local_addr()?.port());
     let server = tokio::spawn(async move {
+        let mut request_count = 0;
         while let Ok((mut socket, _)) = listener.accept().await {
+            request_count += 1;
             tokio::spawn(async move {
                 let mut buffer = [0u8; 4096];
                 let size = socket.read(&mut buffer).await.unwrap_or(0);
@@ -82,8 +84,16 @@ async fn editing_source_is_transactional_and_survives_restart() -> Result<()> {
                 } else {
                     ("200 OK", profile(&["Tokyo A", "Tokyo B", "Tokyo C"]))
                 };
+                let usage_header = if request.starts_with("GET /no-usage") {
+                    String::new()
+                } else {
+                    format!(
+                        "Subscription-Userinfo: upload=0; download={}; total=100\r\n",
+                        request_count * 10
+                    )
+                };
                 let response = format!(
-                    "HTTP/1.1 {status}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{body}",
+                    "HTTP/1.1 {status}\r\n{usage_header}Content-Length: {}\r\nConnection: close\r\n\r\n{body}",
                     body.len()
                 );
                 socket.write_all(response.as_bytes()).await.ok();
@@ -102,6 +112,14 @@ async fn editing_source_is_transactional_and_survives_restart() -> Result<()> {
     )
     .await?;
     let id = backend.snapshot().config.subscriptions[0].id.clone();
+    assert_eq!(
+        store.load()?.subscriptions[0]
+            .usage
+            .as_ref()
+            .unwrap()
+            .remaining(),
+        Some(90)
+    );
     assert_eq!(
         store.load()?.subscriptions[0].notes,
         "Example platform\nMonthly plan"
@@ -145,6 +163,7 @@ async fn editing_source_is_transactional_and_survives_restart() -> Result<()> {
     assert_eq!(sub.name, "Renamed");
     assert_eq!(sub.url.as_deref(), Some(url.as_str()));
     assert_eq!(sub.pool_nodes, ["Tokyo A", "Tokyo C"]);
+    assert_eq!(sub.usage.as_ref().unwrap().remaining(), Some(80));
     assert_eq!(
         sub.notes,
         "Example platform\nAnnual plan\nAccount renewal in November"
@@ -156,6 +175,14 @@ async fn editing_source_is_transactional_and_survives_restart() -> Result<()> {
             .any(|node| node.candidate.name == "Tokyo New" && !node.in_pool)
     );
     command(&backend, Command::UpdateSubscription(id.clone())).await?;
+    assert_eq!(
+        store.load()?.subscriptions[0]
+            .usage
+            .as_ref()
+            .unwrap()
+            .remaining(),
+        Some(70)
+    );
     assert_eq!(backend.snapshot().config.subscriptions[0].notes, sub.notes);
     command(
         &backend,
@@ -203,6 +230,17 @@ async fn editing_source_is_transactional_and_survives_restart() -> Result<()> {
         serde_json::to_value(&reopened.snapshot().config)?,
         old_config
     );
+    command(
+        &reopened,
+        Command::EditSubscription {
+            id,
+            name: "Without usage".into(),
+            url: Some(format!("{base}/no-usage")),
+            notes: String::new(),
+        },
+    )
+    .await?;
+    assert!(reopened.snapshot().config.subscriptions[0].usage.is_none());
     reopened.shutdown();
     server.abort();
     Ok(())
@@ -440,6 +478,7 @@ fn legacy_filters_migrate_to_an_explicit_pool_without_expanding_it() -> Result<(
             .iter()
             .all(|sub| sub.notes.is_empty())
     );
+    assert!(migrated.subscriptions.iter().all(|sub| sub.usage.is_none()));
     assert_eq!(migrated.subscriptions[0].pool_nodes, ["JP B", "JP A"]);
     assert!(migrated.subscriptions[1].pool_nodes.is_empty());
     assert!(migrated.subscriptions[2].pool_nodes.is_empty());

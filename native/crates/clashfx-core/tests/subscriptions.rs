@@ -1,5 +1,5 @@
 use anyhow::Result;
-use clashfx_core::{engine::Backend, store::Store, subscription};
+use clashfx_core::{engine::Backend, model::SubscriptionUsage, store::Store, subscription};
 use std::{
     path::PathBuf,
     sync::{
@@ -39,7 +39,7 @@ async fn update_fixture(
             }
             observed.fetch_add(1, Ordering::SeqCst);
             let reply = format!(
-                "HTTP/1.1 {status} Fixture\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{UPDATED}",
+                "HTTP/1.1 {status} Fixture\r\nSubscription-Userinfo: upload=5; download=25; total=100\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{UPDATED}",
                 UPDATED.len()
             );
             socket.write_all(reply.as_bytes()).await.ok();
@@ -53,6 +53,11 @@ async fn update_fixture(
     let mut sub = subscription::new_subscription("Update fixture".into(), Some(url), &profile);
     sub.pool_nodes = vec!["JP old".into()];
     sub.updated_at = chrono::Utc::now() - chrono::Duration::hours(25);
+    sub.usage = Some(SubscriptionUsage {
+        upload: Some(5),
+        download: Some(15),
+        total: Some(100),
+    });
     store.write_profile(&sub.id, ORIGINAL)?;
     let mut config = store.load()?;
     config.subscriptions.push(sub);
@@ -81,6 +86,14 @@ async fn automatic_update_keeps_an_explicit_allowlist_when_nodes_are_renamed() -
     assert!(snapshot.candidates.is_empty());
     assert_eq!(snapshot.config.subscriptions[0].pool_nodes, ["JP old"]);
     assert_eq!(store.load()?.subscriptions[0].pool_nodes, ["JP old"]);
+    assert_eq!(
+        store.load()?.subscriptions[0]
+            .usage
+            .as_ref()
+            .unwrap()
+            .remaining(),
+        Some(70)
+    );
     backend.shutdown();
     task.abort();
     Ok(())
@@ -97,6 +110,14 @@ async fn failed_automatic_update_keeps_the_last_profile_and_backs_off() -> Resul
     tokio::time::sleep(Duration::from_secs(2)).await;
     let snapshot = backend.snapshot();
     assert_eq!(snapshot.candidates.len(), 1);
+    assert_eq!(
+        snapshot.config.subscriptions[0]
+            .usage
+            .as_ref()
+            .unwrap()
+            .remaining(),
+        Some(80)
+    );
     assert_eq!(
         std::fs::read_to_string(store.profile_path(&snapshot.config.subscriptions[0].id)?)?,
         ORIGINAL

@@ -1,5 +1,5 @@
 use crate::{
-    model::{AUTO_GROUP, AppConfig, Candidate, NodeView, Subscription},
+    model::{AUTO_GROUP, AppConfig, Candidate, NodeView, Subscription, SubscriptionUsage},
     store::Store,
 };
 use anyhow::{Context, Result};
@@ -122,7 +122,29 @@ pub fn candidates(
     Ok(result)
 }
 
-pub async fn download(url: &str) -> Result<String> {
+pub struct DownloadedSubscription {
+    pub body: String,
+    pub usage: Option<SubscriptionUsage>,
+}
+
+fn parse_usage(header: &str) -> Option<SubscriptionUsage> {
+    let mut usage = SubscriptionUsage::default();
+    for field in header.split(';') {
+        let Some((key, value)) = field.split_once('=') else {
+            continue;
+        };
+        let value = value.trim().parse::<u64>().ok();
+        match key.trim().to_ascii_lowercase().as_str() {
+            "upload" => usage.upload = value,
+            "download" => usage.download = value,
+            "total" => usage.total = value,
+            _ => {}
+        }
+    }
+    (usage != SubscriptionUsage::default()).then_some(usage)
+}
+
+pub async fn download(url: &str) -> Result<DownloadedSubscription> {
     let url = validate_url(url)?;
     let client = reqwest::Client::builder()
         .user_agent("clash-verge/2.5.9 ClashFx/0.1")
@@ -142,6 +164,11 @@ pub async fn download(url: &str) -> Result<String> {
         response.content_length().unwrap_or(0) <= 20 * 1024 * 1024,
         "订阅文件超过 20 MB"
     );
+    let usage = response
+        .headers()
+        .get("subscription-userinfo")
+        .and_then(|header| header.to_str().ok())
+        .and_then(parse_usage);
     use futures_util::StreamExt;
     let mut stream = response.bytes_stream();
     let mut bytes = Vec::new();
@@ -155,7 +182,7 @@ pub async fn download(url: &str) -> Result<String> {
     }
     let body = String::from_utf8(bytes).context("订阅不是 UTF-8 YAML 文件")?;
     parse_profile(&body)?;
-    Ok(body)
+    Ok(DownloadedSubscription { body, usage })
 }
 
 pub fn validate_url(url: &str) -> Result<reqwest::Url> {
@@ -176,6 +203,7 @@ pub fn new_subscription(name: String, url: Option<String>, _profile: &Profile) -
         url,
         source_path: None,
         pool_nodes: Vec::new(),
+        usage: None,
         updated_at: chrono::Utc::now(),
     }
 }
@@ -467,6 +495,36 @@ fn rewrite_rules(value: &Value) -> Result<Value> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn usage_header_keeps_missing_values_unknown_and_clamps_overage() {
+        let usage =
+            parse_usage(" download = 75 ; total=100; Upload=5; expire=1800000000;").unwrap();
+        assert_eq!(usage.used(), Some(80));
+        assert_eq!(usage.remaining(), Some(20));
+        for header in [
+            "",
+            "expire=1800000000",
+            "upload=-1; download=NaN; total=invalid",
+        ] {
+            assert!(parse_usage(header).is_none());
+        }
+        let partial = parse_usage("download=75; total=100; upload=invalid").unwrap();
+        assert_eq!(partial.total, Some(100));
+        assert_eq!(partial.used(), None);
+        assert_eq!(partial.remaining(), None);
+        assert_eq!(
+            parse_usage("upload=0; download=0").unwrap().remaining(),
+            None
+        );
+        for header in [
+            "upload=5; download=100; total=100",
+            "upload=0; download=0; total=0",
+            "upload=18446744073709551615; download=1; total=100",
+        ] {
+            assert_eq!(parse_usage(header).unwrap().remaining(), Some(0));
+        }
+    }
 
     #[test]
     fn runtime_omits_unused_health_groups_and_keeps_nested_proxy_chains() {

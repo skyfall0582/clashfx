@@ -750,7 +750,7 @@ dependencies = [
 
 [[package]]
 name = "clashfx"
-version = "0.2.10"
+version = "0.2.11"
 dependencies = [
  "anyhow",
  "chrono",
@@ -766,7 +766,7 @@ dependencies = [
 
 [[package]]
 name = "clashfx-core"
-version = "0.2.10"
+version = "0.2.11"
 dependencies = [
  "anyhow",
  "chrono",

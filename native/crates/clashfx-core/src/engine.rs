@@ -6,7 +6,7 @@ use crate::{
     mihomo::{self, Controller},
     model::{
         Activity, AppConfig, AutoPolicy, Candidate, CoreSettings, ProbeResult, RoutingMode,
-        Snapshot, SwitchTransition,
+        Snapshot, SubscriptionUsage, SwitchTransition,
     },
     policy::{self, CoreLog, FailureMonitor, ProbeReason},
     proxy_compat::ProxyCompatibility,
@@ -615,9 +615,16 @@ impl Engine {
                 };
                 self.state.phase = "正在下载订阅".into();
                 self.publish();
-                let body = subscription::download(&url).await?;
-                self.import(name, Some(url.trim().into()), None, notes, body)
-                    .await?;
+                let downloaded = subscription::download(&url).await?;
+                self.import(
+                    name,
+                    Some(url.trim().into()),
+                    None,
+                    notes,
+                    downloaded.body,
+                    downloaded.usage,
+                )
+                .await?;
             }
             Command::ImportFile { name, path, notes } => {
                 let body = std::fs::read_to_string(&path).context("无法读取订阅文件")?;
@@ -635,6 +642,7 @@ impl Engine {
                     Some(path.to_string_lossy().into_owned()),
                     notes,
                     body,
+                    None,
                 )
                 .await?;
             }
@@ -650,17 +658,19 @@ impl Engine {
                 let name = subscription.name.clone();
                 self.state.phase = format!("正在更新 {name}");
                 self.publish();
-                let body = subscription::download(&url)
+                let downloaded = subscription::download(&url)
                     .await
                     .with_context(|| format!("更新 {name} 失败"))?;
+                let body = downloaded.body;
                 let profile = subscription::parse_profile(&body)?;
                 let mut config = self.state.config.clone();
-                config
+                let sub = config
                     .subscriptions
                     .iter_mut()
                     .find(|sub| sub.id == id)
-                    .unwrap()
-                    .updated_at = Utc::now();
+                    .unwrap();
+                sub.updated_at = Utc::now();
+                sub.usage = downloaded.usage;
                 if self
                     .profiles
                     .get(&id)
@@ -760,9 +770,15 @@ impl Engine {
                 } else if old.url != url {
                     self.state.phase = format!("正在验证 {name} 的新链接");
                     self.publish();
-                    let body =
+                    let downloaded =
                         subscription::download(url.as_deref().context("订阅链接不能为空")?).await?;
-                    self.replace_profile(&id, config, body).await?;
+                    config
+                        .subscriptions
+                        .iter_mut()
+                        .find(|sub| sub.id == id)
+                        .unwrap()
+                        .usage = downloaded.usage;
+                    self.replace_profile(&id, config, downloaded.body).await?;
                 } else {
                     self.commit(config, self.profiles.clone()).await?;
                 }
@@ -1099,6 +1115,7 @@ impl Engine {
         source_path: Option<String>,
         notes: String,
         body: String,
+        usage: Option<SubscriptionUsage>,
     ) -> Result<()> {
         let profile = subscription::parse_profile(&body)?;
         let base = name;
@@ -1117,6 +1134,7 @@ impl Engine {
         let mut subscription = subscription::new_subscription(name.clone(), url, &profile);
         subscription.source_path = source_path;
         subscription.notes = notes;
+        subscription.usage = usage;
         let id = subscription.id.clone();
         self.store.write_profile(&id, &body)?;
         let mut config = self.state.config.clone();

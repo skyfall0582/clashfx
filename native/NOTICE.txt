@@ -4,6 +4,9 @@ ClashFx is a GPUI native client developed in a fork of Clash Verge Rev.
 Upstream source: https://github.com/clash-verge-rev/clash-verge-rev
 Upstream revision: ef784e459d31fe9d1946568b6fe47ac3a7e692b7
 ClashFx and Clash Verge Rev are licensed under GPL-3.0-only; see LICENSE.
+ClashFx source and build scripts for this release:
+https://github.com/skyfall0582/clashfx/tree/v0.2.10
+https://github.com/skyfall0582/clashfx/releases/tag/v0.2.10
 
 The native entry point reuses the Mihomo configuration and controller protocol.
 It is a separate Rust application; it does not embed the legacy Tauri/React UI.
@@ -17,13 +20,36 @@ Mihomo: https://github.com/MetaCubeX/mihomo (GPL-3.0)
 The bundled binary is fetched unmodified from an official tagged release.
 core-version.json records its release URL and archive SHA256.
 Windows installers add an Authenticode signature without changing its executable code.
+The bundled core is Mihomo v1.19.33. Its corresponding source is available at:
+https://github.com/MetaCubeX/mihomo/tree/v1.19.33
+https://github.com/MetaCubeX/mihomo/archive/refs/tags/v1.19.33.zip
+The release also provides a copy of this source archive.
+
+Rust dependency licenses and copyright notices are in THIRD-PARTY-NOTICES.txt.
+The exact unmodified dependency sources are available from the versioned
+crates.io links described there, including the MPL-2.0 option-ext source.
 
 Windows installers include Microsoft's vcruntime140.dll from the Visual Studio
 x64 CRT redistributable directory, retaining its original Microsoft signature.
 This component is subject to the applicable Microsoft software license terms.
+Redistribution terms and distributable file list:
+https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution
+https://visualstudio.microsoft.com/license-terms/vs2022-cruntime/
 
-GeoIP / GeoSite / ASN: https://github.com/MetaCubeX/meta-rules-dat (GPL-3.0)
+GeoIP / GeoSite / ASN build project: https://github.com/MetaCubeX/meta-rules-dat (GPL-3.0)
 The geodata directory contains unmodified official release assets.
 geodata/manifest.json records their source URLs, release date and SHA256.
+Upstream data components retain their own licenses and terms.
 This product includes GeoLite2 data created by MaxMind, available from
 https://www.maxmind.com/.
+GeoLite data is subject to the GeoLite End User License Agreement and its
+incorporated Creative Commons Attribution-ShareAlike 4.0 terms:
+https://www.maxmind.com/en/geolite/eula
+https://creativecommons.org/licenses/by-sa/4.0/
+Users and redistributors of this data must comply with those terms, including
+preserving attribution, passing on applicable duties, promptly using updated
+data and deleting outdated data within 30 days after an updated database is
+released. Do not use it to identify a specific person, household or address.
+Redistributors must also replace or remove installer downloads containing
+outdated GeoLite data within that period. These data terms do not change the
+GPL license of ClashFx's application code.

@@ -1,0 +1,21 @@
+ClashFx: Rust dependency licenses
+
+Generated from Cargo.lock with cargo-about 0.9.3 for Windows x64.
+ClashFx's GPL license is in LICENSE. Additional component notices are in NOTICE.txt.
+
+Source archives for the exact crate versions below are available from:
+https://crates.io/api/v1/crates/CRATE_NAME/CRATE_VERSION/download
+This includes the unmodified MPL-2.0 option-ext source.
+
+{{#each licenses}}
+================================================================================
+{{name}} ({{id}})
+
+Used by:
+{{#each used_by}}
+- {{crate.name}} {{crate.version}}{{#if crate.repository}}: {{{crate.repository}}}{{/if}}
+{{/each}}
+
+{{{text}}}
+
+{{/each}}

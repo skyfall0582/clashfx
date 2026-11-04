@@ -46,12 +46,12 @@ try {
         & "$PSScriptRoot\build.ps1"
     }
     if (-not (Test-Path -LiteralPath 'bin\mihomo.exe')) { & "$PSScriptRoot\fetch-core.ps1" }
-    if (-not (Test-Path -LiteralPath 'bin\geodata\manifest.json')) { & "$PSScriptRoot\fetch-geodata.ps1" }
+    & "$PSScriptRoot\fetch-geodata.ps1"
     $stage = Join-Path $nativeRoot "work\installer-$version\payload"
     $release = Join-Path $nativeRoot 'releases\installer'
     New-Item -ItemType Directory -Force -Path $stage, (Join-Path $stage 'geodata'), (Join-Path $stage 'signed-uninstaller'), $release | Out-Null
     Copy-Item -LiteralPath 'releases\ClashFx\ClashFx.exe' -Destination (Join-Path $stage 'ClashFx.exe') -Force
-    Copy-Item -LiteralPath 'bin\mihomo.exe','bin\core-version.json','NOTICE.txt','LICENSE-APACHE','README.md','USAGE.zh-CN.txt' -Destination $stage -Force
+    Copy-Item -LiteralPath 'bin\mihomo.exe','bin\core-version.json','NOTICE.txt','LICENSE-APACHE','THIRD-PARTY-NOTICES.txt','README.md','USAGE.zh-CN.txt' -Destination $stage -Force
     Copy-Item -LiteralPath (Join-Path $projectRoot 'LICENSE'),$runtimePath -Destination $stage -Force
     foreach ($name in @('Country.mmdb','geoip.dat','geosite.dat','ASN.mmdb','manifest.json')) {
         Copy-Item -LiteralPath (Join-Path $nativeRoot "bin\geodata\$name") -Destination (Join-Path $stage 'geodata') -Force

@@ -4,6 +4,12 @@ Windows 原生代理客户端，使用 Rust 与 GPUI 构建，基于 Mihomo 内�
 
 [English](docs/README_en.md)
 
+## 下载
+
+[下载 Windows x64 签名安装包](https://github.com/skyfall0582/clashfx/releases/latest)
+
+在发布页下载 `ClashFx-版本号-x64-Setup.exe` 并按提示安装。发布页同时提供 SHA256 校验文件和对应源码。
+
 ## 功能
 
 - 导入 Clash / Mihomo YAML 订阅链接或本地文件，管理节点、订阅与备注。

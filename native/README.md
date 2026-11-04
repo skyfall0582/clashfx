@@ -82,6 +82,8 @@ Run those commands from `native`. The core fetch script selects the pinned offic
 
 To create the signed installer, run `scripts/build-installer.ps1` from `native`. It uses the locally configured DSignTool `梵星` rule, Inno Setup 6, and the x64 Visual C++ CRT from Visual Studio Build Tools. Pass `-SigningRule`, `-SigningToolPath`, `-CompilerPath` or `-RuntimeDirectory` for another local setup. The app, Mihomo, installer and uninstaller are signed; invalid or untimestamped signatures fail the build. The setup executable and SHA256 file are written to `native/releases/installer`. Only distribution files are staged; cached subscriptions, settings and development backups are excluded.
 
+`THIRD-PARTY-NOTICES.txt` is included in both application and installer output. After dependency changes, regenerate it with cargo-about 0.9.3 using `cargo about generate --locked --workspace --fail --output-file THIRD-PARTY-NOTICES.txt about.hbs` from `native`. A normal build uses the checked-in notices and does not require cargo-about. Public releases must offer the matching ClashFx and Mihomo sources. GeoLite data has separate attribution, update and deletion requirements; see `NOTICE.txt` before redistributing databases or retaining older installer downloads.
+
 ## Verification
 
 ```powershell

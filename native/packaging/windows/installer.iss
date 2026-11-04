@@ -63,6 +63,7 @@ Source: "{#PayloadDir}\core-version.json"; DestDir: "{app}"; Flags: ignoreversio
 Source: "{#PayloadDir}\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PayloadDir}\LICENSE-APACHE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PayloadDir}\NOTICE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PayloadDir}\THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PayloadDir}\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PayloadDir}\USAGE.zh-CN.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PayloadDir}\geodata\Country.mmdb"; DestDir: "{app}\geodata"; Flags: ignoreversion

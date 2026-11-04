@@ -15,7 +15,7 @@ try {
     Copy-Item -LiteralPath 'bin\core-version.json' -Destination $destination -Force
     New-Item -ItemType Directory -Force -Path (Join-Path $destination 'geodata') | Out-Null
     Get-ChildItem -LiteralPath 'bin\geodata' -File | Copy-Item -Destination (Join-Path $destination 'geodata') -Force
-    Copy-Item -LiteralPath '..\LICENSE', 'NOTICE.txt', 'LICENSE-APACHE', 'README.md', 'USAGE.zh-CN.txt' -Destination $destination -Force
+    Copy-Item -LiteralPath '..\LICENSE', 'NOTICE.txt', 'LICENSE-APACHE', 'THIRD-PARTY-NOTICES.txt', 'README.md', 'USAGE.zh-CN.txt' -Destination $destination -Force
     Write-Output "Built $destination\ClashFx.exe"
 } finally { Pop-Location }
 

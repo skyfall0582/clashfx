@@ -4,6 +4,11 @@ A native Windows proxy client built with Rust and GPUI, powered by Mihomo, with 
 
 [简体中文](../README.md)
 
+## Download
+
+[Download the signed Windows x64 installer](https://github.com/skyfall0582/clashfx/releases/latest).
+Choose `ClashFx-VERSION-x64-Setup.exe`. SHA256 checksums and corresponding source are provided on the release page.
+
 ## Features
 
 - Import Clash / Mihomo YAML subscription URLs or local files, and manage nodes, subscriptions and notes.
